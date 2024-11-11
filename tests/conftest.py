@@ -1,12 +1,17 @@
 import pytest
 from app import create_app
+from config import Config
+
+
+class TestConfig(Config):
+    TESTING = True
+    API_KEY = 'test-api-key'
+    REDIS_URL = 'redis://'
 
 
 @pytest.fixture
 def app():
-    app = create_app({
-        'TESTING': True,
-    })
+    app = create_app(TestConfig)
 
     yield app
 
