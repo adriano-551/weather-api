@@ -1,27 +1,37 @@
-# syntax=docker/dockerfile:1.4
-FROM --platform=$BUILDPLATFORM python:3.10-alpine AS builder
+FROM tiangolo/uwsgi-nginx:python3.12
 
-WORKDIR /code
+# Install requirements
+COPY requirements.txt /tmp/requirements.txt
+RUN pip install --no-cache-dir -r /tmp/requirements.txt
 
-COPY requirements.txt /code
-RUN --mount=type=cache,target=/root/.cache/pip \
-    pip3 install -r requirements.txt
+# URL under which static (not modified by Python) files will be requested
+# They will be served by Nginx directly, without being handled by uWSGI
+ENV STATIC_URL="/static"
+# Absolute path in where the static files wil be
+ENV STATIC_PATH="/app/static"
 
-COPY . /code
+# If STATIC_INDEX is 1, serve / with /static/index.html directly (or the static URL configured)
+# ENV STATIC_INDEX 1
+ENV STATIC_INDEX=0
 
-ENTRYPOINT ["python3"]
-CMD ["main.py"]
+# Add demo app
+COPY ./app /weather-api/app
+COPY ./tests /weather-api/tests
+COPY weather-api.py config.py ./
+WORKDIR /weather-api
 
-FROM builder as dev-envs
+# Make /app/* available to be imported by Python globally to better support several use cases like Alembic migrations.
+ENV PYTHONPATH=/app
 
-RUN <<EOF
-apk update
-apk add git bash
-EOF
+# Move the base entrypoint to reuse it
+RUN mv /entrypoint.sh /uwsgi-nginx-entrypoint.sh
+# Copy the entrypoint that will generate Nginx additional configs
+COPY entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
 
-RUN <<EOF
-addgroup -S docker
-adduser -S --shell /bin/bash --ingroup docker vscode
-EOF
-# install Docker tools (cli, buildx, compose)
-COPY --from=gloursdocker/docker / /
+ENTRYPOINT ["/entrypoint.sh"]
+
+# Run the start script provided by the parent image tiangolo/uwsgi-nginx.
+# It will check for an /app/prestart.sh script (e.g. for migrations)
+# And then will start Supervisor, which in turn will start Nginx and uWSGI
+CMD ["/start.sh"]

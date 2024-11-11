@@ -1,4 +1,9 @@
+coverage
 flask
 flask-limiter
 requests 
 redis
+rq
+pytest
+pytest-mock
+python-dotenv
