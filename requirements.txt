@@ -7,3 +7,4 @@ rq
 pytest
 pytest-mock
 python-dotenv
+pydantic

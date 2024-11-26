@@ -1,7 +1,8 @@
 from typing import Optional
+from pydantic import BaseModel
 
 
-class Weather():
+class Weather(BaseModel):
     country_id: int
     weather_type: str
     temp: float
