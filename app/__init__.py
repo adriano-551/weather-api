@@ -1,6 +1,4 @@
-import logging
-import os
-from flask import Flask, request, current_app
+from flask import Flask
 from redis import Redis
 import rq
 from config import Config
@@ -22,4 +20,4 @@ def create_app(config_class=Config):
     return app
 
 
-#from app import models
+from app import models
