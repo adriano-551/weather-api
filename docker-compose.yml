@@ -1,0 +1,9 @@
+services:
+  web:
+    build: .
+    ports:
+      - "56734:80"
+    volumes:
+      - .:/weather-api
+  redis:
+    image: "redis:alpine"
