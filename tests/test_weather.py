@@ -1,7 +1,7 @@
 import json
 
 
-def test_get_weather_success(client, mocker):
+def test_get_weather_success(test_client, mocker):
     with open('/tests/london_weather.json') as file:
         london_weather_response = json.load(file)
     with open('/tests/oslo_weather.json') as file:
@@ -15,9 +15,9 @@ def test_get_weather_success(client, mocker):
     mock_response.json.return_value = oslo_weather_response
     mocker.patch('requests.get', return_value=mock_response)
 
-    response_london = client.get('api/weather/London/UK')
+    response_london = test_client.get('api/weather/London/UK')
 
-    response_london = client.get('api/weather/London/UK')
+    response_london = test_client.get('api/weather/London/UK')
 
     assert response_london.status_code == 200
     assert len(response_london.json) == 1
@@ -25,7 +25,7 @@ def test_get_weather_success(client, mocker):
     assert response_london.json[0]['sys']['country'] == 'GB'
 
 
-def test_get_weather_failure(client, mocker):
+def test_get_weather_failure(test_client, mocker):
     with open('/tests/london_weather.json') as file:
         london_weather_response = json.load(file)
 
@@ -34,12 +34,12 @@ def test_get_weather_failure(client, mocker):
 
     mocker.patch('requests.get', return_value=mock_response)
 
-    response = client.get('api/weather/Londonnnn/UnitedK')
+    response = test_client.get('api/weather/Londonnnn/UnitedK')
 
     assert response.status_code == 400
 
 
-def test_weather_cache(client, mocker):
+def test_weather_cache(test_client, mocker):
     with open('/tests/london_weather.json') as file:
         london_weather_response = json.load(file)
 
@@ -48,8 +48,8 @@ def test_weather_cache(client, mocker):
 
     mocker.patch('requests.get', return_value=mock_response)
 
-    response = client.get('api/weather/London/UK')
-    response_cache = client.get('api/weather/London/UK')
+    response = test_client.get('api/weather/London/UK')
+    response_cache = test_client.get('api/weather/London/UK')
 
     assert response.status_code == 200
     assert len(response.json) == 1

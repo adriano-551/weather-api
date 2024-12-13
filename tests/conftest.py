@@ -10,17 +10,17 @@ class TestConfig(Config):
 
 
 @pytest.fixture
-def app():
-    app = create_app(TestConfig)
+def test_app():
+    test_app = create_app(TestConfig)
 
-    yield app
-
-
-@pytest.fixture
-def client(app):
-    return app.test_client()
+    yield test_app
 
 
 @pytest.fixture
-def runner(app):
-    return app.test_cli_runner()
+def test_client(test_app):
+    return test_app.test_client()
+
+
+@pytest.fixture
+def test_runner(test_app):
+    return test_app.test_cli_runner()
