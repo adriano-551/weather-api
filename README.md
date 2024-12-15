@@ -1,6 +1,6 @@
 ## Overview ##
 
-This is an API built using Flask and Redis to receive requests for weather data with a city code. The API caches weather data responses from openweathermap and returns the response as JSON.
+This is an API built using Flask and Redis to receive requests for weather data for a city and country. The API caches weather data responses from openweathermap and returns the weather data response as JSON.
 
 Based on a project suggestion from the following source: https://roadmap.sh/projects/weather-api-wrapper-service
 
@@ -12,9 +12,9 @@ Docker
 
 ## Installation ##
 
-After cloning the project use the following command to set up the docker image.
+After cloning the project use the following command to set up the docker images.
 
-`sudo bash run-docker.sh'
+`docker compose up'
 
 When this is done you can use the following command to run pytest from inside the docker container.
 
@@ -22,6 +22,6 @@ When this is done you can use the following command to run pytest from inside th
 
 ## API Overview ##
 
-'GET /api/weather/<string:city_code>'
+'GET /api/weather/<string:city_name>/<string:country_code>'
 
-Gets the current weather data for the requested city_code
+Gets the current day's weather for a specific city and country, returned in JSON format.
